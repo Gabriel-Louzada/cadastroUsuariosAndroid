@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:teste_bd/dao/UsuarioDao.dart';
+import 'package:provider/provider.dart';
 import 'package:teste_bd/model/UsuarioModel.dart';
+import 'package:teste_bd/provider/provider.dart';
 
 class AlterarCadastro extends StatefulWidget {
   const AlterarCadastro(
@@ -143,10 +144,8 @@ class _AlterarCadastroState extends State<AlterarCadastro> {
                         idade: int.parse(idade),
                         email: email);
                     // alterando o cadastro do usuario
-                    await Usuariodao().alterarUsuario(usuario);
-
-                    print(usuario);
-
+                    await Provider.of<UsuarioProvider>(context, listen: false)
+                        .atualizarUsuario(usuario);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text("Alterando o usuario"),

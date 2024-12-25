@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:teste_bd/dao/UsuarioDao.dart';
 import 'package:teste_bd/model/UsuarioModel.dart';
-import 'package:teste_bd/screen/cadastro.dart';
+import 'package:teste_bd/provider/provider.dart';
+import 'package:teste_bd/screen/telaCadastro.dart';
 import 'package:teste_bd/widgets/usuarioCard.dart';
 
 class Telainicial extends StatefulWidget {
@@ -18,13 +20,9 @@ class _TelainicialState extends State<Telainicial> {
   @override
   void initState() {
     super.initState();
-    carregarUsuarios();
-  }
-
-  void carregarUsuarios() async {
-    final lista = await usuariodao.listarTodosUsuarios();
-    setState(() {
-      usuarios = lista;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Aguarda o contexto estar disponível antes de acessar o Provider
+      Provider.of<UsuarioProvider>(context, listen: false).carregarUsuarios();
     });
   }
 
@@ -36,40 +34,29 @@ class _TelainicialState extends State<Telainicial> {
           "Exibindo usuarios",
           style: TextStyle(color: Colors.white, fontSize: 30),
         ),
-        actions: [
-          IconButton(
-              onPressed: () {
-                carregarUsuarios();
-              },
-              icon: const Icon(
-                Icons.refresh,
-                color: Colors.white,
-              ))
-        ],
         backgroundColor: Colors.blueAccent,
       ),
-      body: usuarios.isEmpty
-          ? const Center(
-              child: Text("Nenhum usuarios encontrado!"),
-            )
-          : ListView.builder(
-              itemCount: usuarios.length,
-              itemBuilder: (context, index) {
-                final usuario = usuarios[index];
-                return UsuarioCar(
-                  usuario: usuario,
-                  usuariodao: usuariodao,
-                  onUsuarioRemovido: carregarUsuarios,
-                );
-              },
-            ),
+      body: Consumer<UsuarioProvider>(
+        builder: (context, provider, child) {
+          return ListView.builder(
+            itemCount: provider.usuarios.length,
+            itemBuilder: (context, index) {
+              final usuarioprovider = provider.usuarios[index];
+              return UsuarioCar(
+                usuario: usuarioprovider,
+                usuariodao: usuariodao,
+              );
+            },
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (contextNew) =>
-                  CadatroUsuario(usuarioContext: contextNew),
+                  CadastrarUsuario(usuarioContext: contextNew),
             ),
           );
         },

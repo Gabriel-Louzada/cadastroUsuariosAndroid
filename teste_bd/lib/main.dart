@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:teste_bd/provider/provider.dart';
 import 'package:teste_bd/screen/telaInicial.dart';
 
 void main() {
@@ -11,12 +13,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ChangeNotifierProvider(
+      create: (context) => UsuarioProvider(),
+      child: MaterialApp(
         title: 'Teste banco usuarios',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
-        home: const Telainicial());
+        home: const Telainicial(),
+      ),
+    );
   }
 }

@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:teste_bd/dao/UsuarioDao.dart';
 import 'package:teste_bd/model/UsuarioModel.dart';
+import 'package:teste_bd/provider/provider.dart';
 import 'package:teste_bd/screen/alterarCadastro.dart';
 
 class UsuarioCar extends StatelessWidget {
   final UsuarioModel usuario;
   final Usuariodao usuariodao;
-  final VoidCallback onUsuarioRemovido;
 
   const UsuarioCar(
-      {required this.usuariodao,
-      required this.usuario,
-      required this.onUsuarioRemovido,
-      super.key});
+      {required this.usuariodao, required this.usuario, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,20 +27,20 @@ class UsuarioCar extends StatelessWidget {
         "Idade: ${usuario.idade}  E-mail: ${usuario.email}",
         style: const TextStyle(fontSize: 20),
       ),
-      //PRESSIONAR E SEGURAR PARA REMOVER OS USUARIOS
+      //PRESSIONAR PARA REMOVER OS USUARIOS
       onLongPress: () async {
         //REMOVER USUARIO
-        await usuariodao.removerUsuario(usuario.id!);
-
-        //METODO PARA AUTALIZAÇÃO PARA REGARREGAR A LISTA DE USUARIOS
-        onUsuarioRemovido();
+        await Provider.of<UsuarioProvider>(context, listen: false)
+            .removerUsuario(usuario.id!);
       },
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (contextNew) =>
-                AlterarCadastro(usuario: usuario, usuarioContext: contextNew),
+            builder: (contextNew) => AlterarCadastro(
+              usuarioContext: contextNew,
+              usuario: usuario,
+            ),
           ),
         );
       },

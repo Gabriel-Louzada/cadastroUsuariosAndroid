@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:teste_bd/dao/UsuarioDao.dart';
+import 'package:provider/provider.dart';
 import 'package:teste_bd/model/UsuarioModel.dart';
+import 'package:teste_bd/provider/provider.dart';
 
-class CadatroUsuario extends StatefulWidget {
-  const CadatroUsuario({super.key, required this.usuarioContext});
+class CadastrarUsuario extends StatefulWidget {
+  const CadastrarUsuario({super.key, required this.usuarioContext});
 
   final BuildContext usuarioContext;
 
   @override
-  State<CadatroUsuario> createState() => _CadatroUsuarioState();
+  State<CadastrarUsuario> createState() => _CadastrarUsuarioState();
 }
 
-class _CadatroUsuarioState extends State<CadatroUsuario> {
+class _CadastrarUsuarioState extends State<CadastrarUsuario> {
   final TextEditingController _nomeController = TextEditingController();
   final TextEditingController _idadeController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
@@ -26,12 +27,21 @@ class _CadatroUsuarioState extends State<CadatroUsuario> {
     }
   }
 
+// Certifique-se de descartar o controlador para evitar vazamentos de memória
+  @override
+  void dispose() {
+    _nomeController.dispose();
+    _idadeController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Cadastro de usuario",
+          "Cadastrar Usuario",
           style: TextStyle(color: Colors.white, fontSize: 30),
         ),
         backgroundColor: Colors.blueAccent,
@@ -42,7 +52,8 @@ class _CadatroUsuarioState extends State<CadatroUsuario> {
           padding: const EdgeInsets.all(8.0),
           child: ListView(
             children: [
-              const Text("Cadastrar usuario", style: TextStyle(fontSize: 40)),
+              const Text("Cadastrando Usuario ",
+                  style: TextStyle(fontSize: 40)),
               const SizedBox(
                 height: 20,
               ),
@@ -116,17 +127,17 @@ class _CadatroUsuarioState extends State<CadatroUsuario> {
 
                     final UsuarioModel usuario = UsuarioModel(
                         nome: nome, idade: int.parse(idade), email: email);
-                    // inserindo usuario
-                    await Usuariodao().inserirUsuario(usuario);
 
-                    print(usuario);
+                    // Usando o Provider para acessar a instância existente
+                    await Provider.of<UsuarioProvider>(context, listen: false)
+                        .adicionarUsuario(usuario);
 
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content:
-                            Text("Adicionando usuario a lista de usuarios"),
+                        content: Text("Cadastrando usuario"),
                       ),
                     );
+                    Navigator.pop(context);
                   }
                 },
                 child: const Text(

@@ -29,7 +29,6 @@ class Usuariodao {
   inserirUsuarioTeste() async {
     await inserirUsuario(UsuarioModel(
         nome: "Gabriel Louzada", idade: 25, email: "gsouzalouzada@gmail.com"));
-    print("Inserindo o usuario de teste");
   }
 
 //METODO PARA LISTAR TODOS OS DADOS.
@@ -41,7 +40,6 @@ class Usuariodao {
         await db.rawQuery(sqlSelect); // retorno do banco de dados
     List<UsuarioModel> usuarios =
         resultado.map((map) => UsuarioModel.fromMap(map)).toList();
-    print(resultado);
     //CONVERTENDO O RETORNO DO BANCO DE DADOS PARA UMA LISTA DE USUARIOS MODEL
     return usuarios;
   }
@@ -68,8 +66,6 @@ class Usuariodao {
   Future<int> removerUsuario(int id) async {
     final db = await getDataBase();
     const sqlDelete = '''DELETE FROM $nomeTabela WHERE id = ?''';
-
-    print(id);
     final resultado = await db.rawDelete(sqlDelete, [id]);
     return resultado; // retornar o numero de linhas deletadas
   }
