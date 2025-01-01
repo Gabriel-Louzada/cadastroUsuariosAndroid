@@ -10,6 +10,7 @@ class UsuarioProvider extends ChangeNotifier {
   //CARREGAR TODOS OS USUARIOS
   Future<void> carregarUsuarios() async {
     _usuarios = await Usuariodao().listarTodosUsuarios();
+    print(_usuarios);
     notifyListeners();
   }
 

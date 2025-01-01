@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:teste_bd/model/UsuarioModel.dart';
 import 'package:teste_bd/provider/provider.dart';
+import 'package:teste_bd/util/VincularImagem.dart';
 
 class AlterarCadastro extends StatefulWidget {
   const AlterarCadastro(
@@ -15,6 +19,8 @@ class AlterarCadastro extends StatefulWidget {
 }
 
 class _AlterarCadastroState extends State<AlterarCadastro> {
+  File? imagem;
+  File? novaImagem;
   TextEditingController _nomeController = TextEditingController();
   TextEditingController _idadeController = TextEditingController();
   TextEditingController _emailController = TextEditingController();
@@ -37,6 +43,7 @@ class _AlterarCadastroState extends State<AlterarCadastro> {
     _idadeController =
         TextEditingController(text: widget.usuario.idade.toString());
     _emailController = TextEditingController(text: widget.usuario.email);
+    imagem = File(widget.usuario.imagem!);
   }
 
 // Certifique-se de descartar o controlador para evitar vazamentos de memória
@@ -129,6 +136,65 @@ class _AlterarCadastroState extends State<AlterarCadastro> {
               const SizedBox(
                 height: 20,
               ),
+              ListTile(
+                leading: const Icon(Icons.add_a_photo),
+                onTap: () {
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true, // Permite ocupar mais espaço
+                    builder: (context) => Container(
+                      padding: const EdgeInsets.all(8),
+                      height: MediaQuery.of(context).size.height *
+                          0.3, // Metade da tela
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.photo),
+                            title: const Text(
+                              "Galeria",
+                              style: TextStyle(fontSize: 25),
+                            ),
+                            onTap: () async {
+                              final imagemSelecionada = await VincularImagem()
+                                  .pick(ImageSource.gallery);
+                              if (imagemSelecionada != null) {
+                                setState(() {
+                                  novaImagem = imagemSelecionada;
+                                });
+                              } else {
+                                novaImagem = imagem;
+                              }
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.camera_alt),
+                            title: const Text(
+                              "Camera",
+                              style: TextStyle(fontSize: 25),
+                            ),
+                            onTap: () async {
+                              final imagemSelecionada = await VincularImagem()
+                                  .pick(ImageSource.camera);
+                              if (imagemSelecionada != null) {
+                                setState(() {
+                                  novaImagem = imagemSelecionada;
+                                });
+                              } else {
+                                novaImagem = imagem;
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+                title: const Text("Vincular imagem",
+                    style: TextStyle(fontSize: 20)),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
@@ -142,7 +208,10 @@ class _AlterarCadastroState extends State<AlterarCadastro> {
                         id: id,
                         nome: nome,
                         idade: int.parse(idade),
-                        email: email);
+                        email: email,
+                        imagem: novaImagem == null
+                            ? imagem!.path
+                            : novaImagem!.path);
                     // alterando o cadastro do usuario
                     await Provider.of<UsuarioProvider>(context, listen: false)
                         .atualizarUsuario(usuario);

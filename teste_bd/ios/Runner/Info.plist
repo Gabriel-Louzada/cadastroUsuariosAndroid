@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>É nessario o uso do album de fotos para salvar as imagens</string>
+	<key>NSCameraUsageDescription</key>
+	<string>É nessario o uso da camera para salvar as imagens</string>
 </dict>
 </plist>
